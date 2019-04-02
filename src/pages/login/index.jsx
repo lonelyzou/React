@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {
-    Form, Icon, Input, Button,
+    Form, Icon, Input, Button,message
 } from 'antd';
 import logo from './logo.png';
 import './index.less';
-
+import {reqLogin} from '../../api/index'
 
 const Item = Form.Item;
 @Form.create()
@@ -12,10 +12,19 @@ const Item = Form.Item;
     login = (e)=>{
         e.preventDefault();
         //校验表单是否通过
-        this.props.form.validateFields((err,values)=>{
+        this.props.form.validateFields(async (err,values)=>{
             if(!err){
                 //校验成功
                 console.log(values);
+                const {username, password} = values
+                const result =await reqLogin(username, password);
+                //判断登录是否成功
+                if(result.status === 0){
+                    message.success('登录成功');
+                    this.props.history.replace('/')
+                } else {
+                    message.error(result.msg, 2)
+                }
             } else {
                 // 校验失败
                 console.log('****** 表单校验失败 ******');

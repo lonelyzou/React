@@ -10,9 +10,6 @@ export default class App extends Component{
         return (
             <Switch>
                 <Route path="/login" component={Login}/>
-                <Route path="/register" component={Register}/>
-                {/* 为了开发login组件设计的 */}
-                <Redirect to="/login"/>
                 <Route path="/" compontent={Admin}/>
             </Switch>
         )
