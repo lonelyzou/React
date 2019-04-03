@@ -3,7 +3,7 @@ import {
     Form, Input, Tooltip, Icon, Button,
 } from 'antd';
 import '../login/index.less'
-import logo from "../login/logo.png";
+import logo from "../../assets/images/logo.png";
 
 const Item = Form.Item;
 @Form.create()

@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {
-    Form, Icon, Input, Button,message
-} from 'antd';
-import logo from './logo.png';
-import './index.less';
+import { Form, Icon, Input, Button, message } from 'antd';
+
 import {reqLogin} from '../../api/index'
+import { setItem } from '../../utils/storage-utils';
+import memory from '../../utils/memory-utils';
+import './index.less';
+import logo from '../../assets/images/logo.png';
 
 const Item = Form.Item;
 @Form.create()
@@ -16,12 +17,17 @@ const Item = Form.Item;
             if(!err){
                 //校验成功
                 console.log(values);
-                const {username, password} = values
+                const {username, password} = values;
                 const result =await reqLogin(username, password);
                 //判断登录是否成功
                 if(result.status === 0){
                     message.success('登录成功');
-                    this.props.history.replace('/')
+                    //保存用户数据
+                    const data = result.data;
+                    memory.user = data ;
+                        setItem(data);
+                    // 跳转到admin页面
+                    this.props.history.replace('/');
                 } else {
                     message.error(result.msg, 2)
                 }
