@@ -61,7 +61,7 @@ const Item = Form.Item;
             <div className="login">
                 <header className="login-header">
                     <img src={logo} alt="logo"/>
-                    <h1>React项目: 后台管理系统</h1>
+                    <h1>Avalon后台管理系统</h1>
                 </header>
                 <section className="login-content">
                     <h3>用户登录</h3>

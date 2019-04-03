@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom'
 import menuList from '../../config/menuConfig';
 import logo from "../../assets/images/logo.png";
+import './index.less'
 const SubMenu = Menu.SubMenu;
 const Item = Menu.Item;
 
@@ -72,7 +73,7 @@ const Item = Menu.Item;
             <Fragment>
                 <Link className="logo" to="/home" onClick={this.handleClick}>
                     <img src={logo} alt="logo"/>
-                    <h1 style={{opacity}}>硅谷后台</h1>
+                    <h1 style={{opacity}}>Avalon后台</h1>
                 </Link>
                 <Menu theme="dark" selectedKeys={[pathname]} mode="inline" openKeys={this.state.openKeys} onOpenChange={this.openChange}>
                     {

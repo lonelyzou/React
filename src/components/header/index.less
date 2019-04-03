@@ -1,3 +1,37 @@
 .header{
-  height: 100px;
+  line-height: 16px;
+  .header-top{
+    text-align: right;
+    padding: 15px;
+    border-bottom: 1px solid #1da57a;
+  }
+  .header-bottom{
+   display: flex;
+    align-items: center;
+    height: 40px;
+    .header-main-left{
+      font-size: 20px;
+      text-align: center;
+      &::after{
+        content: '';
+        position: absolute;
+        left: 50% ;
+        bottom: -45px;
+        transform: translateX(-50%);
+        border-bottom:20px solid transparent ;
+        border-right:20px solid transparent ;
+        border-top:20px solid white ;
+        border-left:20px solid transparent ;
+      }
+    }
+    .header-main-right{
+      text-align: right;
+      padding-right: 25px;
+      img{
+        width: 30px;
+        height: 20px;
+        margin: 0 10px;
+      }
+    }
+  }
 }

@@ -1,6 +1,17 @@
-.left-nav {
-  height: calc(100vh);
-  background: #001529;
-  color: #ffffff;
+.logo {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  background: #002140;
+}
+.logo img {
+  margin: 0 20px 0 25px;
+  width: 35px;
+  height: 35px;
+}
+.logo h1 {
+  white-space: nowrap;
+  color: white;
+  font-size: 20px;
 }
 /*# sourceMappingURL=index.css.map */
