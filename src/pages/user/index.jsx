@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import MyBtn from '../../components/myButton/index'
-import {Button, Card, Table, Select, Form, message, Modal} from "antd";
+import {Button, Card, Table,message, Modal} from "antd";
 import dayjs from "dayjs";
 import { reqUserList, reqAddUser } from '../../api/index'
 import AddUserForm from "./Add-user-form";
 
-const Option = Select.Option;
-const Item = Form.Item
 class User extends Component {
     constructor(props) {
         super(props);

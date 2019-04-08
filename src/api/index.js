@@ -35,5 +35,7 @@ export const reqAddUser = (username,password ,phone ,email ,role_id ) => ajax(pr
 export const reqRoleList = () => ajax(prefix+'/manage/role/list');
 //新增角色
 export const reqAddRole = (name)=>ajax(prefix+'/manage/role/add',{name},"POST")
-//请求分页商品列表数据的函数
+//请求分页商品列表数据的函数，pageNum：第几页，pageSize：共几条
 export const reqProductList = (pageNum, pageSize)=>ajax(prefix+'/manage/product/list',{pageNum, pageSize})
+//添加商品
+export const reqAddProduct = (categoryId,pCategoryId,name,price,desc,detail)=>ajax(prefix+'/manage/product/add',{categoryId,pCategoryId,name,price,desc,detail},"POST")

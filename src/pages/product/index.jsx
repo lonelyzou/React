@@ -1,97 +1,92 @@
-import React, { Component } from 'react';
+import React, { Component,Fragment } from 'react';
+import {Link} from 'react-router-dom'
 import MyBtn from '../../components/myButton/index'
-import {Button, Card, Icon, Modal, Table,Select,Input,Form,Cascader,InputNumber} from "antd";
-import SaveUpdate from './save-update'
+import {Button, Card, Icon, Table,Select,Input,Form,message} from "antd";
+import {reqProductList} from '../../api/index'
 const Option = Select.Option;
-const Item = Form.Item
 @Form.create()
 class Product extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            formLayout: 'horizontal',
-
+            product:[], //  单页数据
+            total:0    //
         };
     }
-    getProductList = ()=>{
+    columns = [
+        {
+            title: '商品名称',
+            dataIndex: 'name',
+            width:'25%',
+            render: text => <a href="javascript:;">{text}</a>,
+        }, {
+            title: '商品描述',
+            dataIndex: 'desc',
+            width:'25%',
+        }, {
+            title: '价格',
+            width:'16%',
+            dataIndex: 'price',
+        },
+        {
+            title: '状态',
+            dataIndex: 'status',
+            width:'16%',
+            render: () => <span><Button type="primary">上架</Button><span style={{marginLeft:"15px"}}>已上架</span></span>,
+        },
+        {
+            title: '操作',
+            width:'300px',
+            render: () => <span><MyBtn>详情</MyBtn><MyBtn style={{marginLeft:"15px"}}>修改</MyBtn></span>,
+        }];
+    getProductList = async (pageNum, pageSize = 3)=>{
+        const result = await reqProductList(pageNum,pageSize) ;
+        console.log(result)
+        if(result.status === 0) {
+            this.setState({
+                product: result.data.list,
+                total: result.data.total
+            })
+        } else {
+            message.error('')
+        }
 
     }
-    AddProducts = ()=>{
-        // this.props.history.replace("/product/saveupdate")
+    componentDidMount() {
+        this.getProductList(1)
     }
+
   render() {
-    const columns = [
-        {
-      title: '商品名称',
-      dataIndex: 'name',
-      width:'25%',
-      render: text => <a href="javascript:;">{text}</a>,
-    }, {
-      title: '商品描述',
-      dataIndex: 'description',
-      width:'25%',
-    }, {
-      title: '价格',
-      width:'16%',
-      dataIndex: 'price',
-    },
-      {
-        title: '状态',
-        dataIndex: 'two',
-        width:'16%',
-        render: () => <span><Button type="primary">上架</Button><span style={{marginLeft:"15px"}}>已上架</span></span>,
-      },
-      {
-        title: '操作',
-        width:'300px',
-        render: () => <span><MyBtn>详情</MyBtn><MyBtn style={{marginLeft:"15px"}}>修改</MyBtn></span>,
-      }];
-    const data = [
-        {
-      key: '1',
-      name: 'John Brown',
-      description: '￥300,000.00',
-      price: '￥300,000.00',
-    },{
-        key: '1',
-        name: 'John Brown',
-        description: '￥300,000.00',
-        price: '￥300,000.00',
-    }];
-    const { opacity , formLayout } = this.state;
-      if(opacity === 0){
-          return (
-             <SaveUpdate/>
-          )
-      } else {
+    const {product, total} = this.state;
           return (
               <Card
-                  title={ <span>
-                         <Select defaultValue="one"  style={{ width: '13%' ,marginRight:"10px"}}>
-                           <Option value="one">根据商品描述</Option>
-                           <Option value="two">根据商品名称</Option>
+                  title={ <Fragment>
+                         <Select defaultValue="one" value={0}>
+                           <Option value={0} key={0}>根据商品描述</Option>
+                           <Option value={1} key={1}>根据商品名称</Option>
                          </Select>
-                         <Input type="text"  style={{ width: '15%', marginRight: '3%' }} placeholder="关键字"/>
-                         <Button type="primary" htmlType="submit" style={{ width:'5%'}}>搜索</Button>
-                        </span> }
-                  extra={<Button type="primary" onClick={this.AddProducts}><Icon type="plus"/>添加产品</Button> }
+                         <Input type="text"  style={{ width: '15%', margin: '0 10px' }} placeholder="关键字"/>
+                         <Button type="primary">搜索</Button>
+                        </Fragment> }
+                  extra={<Link to="/product/saveupdate"><Button type="primary"><Icon type="plus"/>添加产品</Button> </Link>}
                   style={{ width: "100%"}}>
                   <Table
-                      columns={columns}
-                      dataSource={data}
+                      rowKey="_id"
+                      columns={this.columns}
+                      dataSource={product}
                       bordered
                       pagination={{
                           showSizeChanger: true,
                           pageSizeOptions:['3','6','9','12'],
                           defaultPageSize: 3,
                           showQuickJumper:true,
-
+                          total:total,
+                          onChange:this.getProductList,
+                          onShowSizeChange:this.getProductList
                       }}
-                      rowKey="_id"
                   />
               </Card>
           )
-      }
   }
 }
 export default Product

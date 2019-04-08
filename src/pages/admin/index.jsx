@@ -11,7 +11,7 @@ import LeftNav from '../../components/left-nav';
 import Home from '../home';
 import HeaderMain from '../../components/header/index'
 import Category from '../category';
-import Product from '../product';
+import Product from '../product/products';
 import Role from '../role/index';
 import Bar from '../charts/bar';
 import User from '../user/index';

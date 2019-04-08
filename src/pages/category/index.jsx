@@ -76,17 +76,19 @@ export default class Category extends Component {
         const {validateFields} = this.createAddForm.current.props.form
         validateFields(async (errors, values) => {
             if(!errors){
-                const result = await reqAddCategory(values.parentId,values.categoryName);
+                const {parentId, categoryName} = values
+                const result = await reqAddCategory(parentId,categoryName);
                 if(result.status === 0){
-                    let name = "categories";
-                    if(this.state.isShowSubCategories){
-                        name = "subCategories";
+                    message.success("添加成功");
+                    const options = {isShowAddCategoryModal: false}
+                    if(parentId==="0"){
+                        options.categories = [...this.state.categories,result.data]
+                    } else if (parentId === this.state.parentCategory._id){
+                        options.subCategories = [...this.state.subCategories,result.data]
                     }
-                    message.success("添加成功")
-                    this.setState({
-                        isShowAddCategoryModal: false,
-                        [name]: [...this.state[name],result.data]
-                    })
+                    this.setState(options);
+                } else {
+                    message.error(result.msg);
                 }
             }else {
                 // 校验失败 -- 啥也不做
@@ -117,12 +119,8 @@ export default class Category extends Component {
                          return item
                      })
                  })
-                 console.log("11111")
-                 console.log(this.state.category)
                  //重置表单项
                  resetFields();
-                 console.log("22222")
-                 console.log(this.state.category)
              } else {
                  message.error(result.msg);
              }
@@ -153,6 +151,9 @@ export default class Category extends Component {
 
   showModal = (name,isShow) => {
      return ()=>{
+         if(name === 'isShowUpdateCategoryNameModal' && isShow === false ) {
+             this.createUpdateForm.current.props.form.resetFields()
+         }
          this.setState({
              [name]:isShow
          })

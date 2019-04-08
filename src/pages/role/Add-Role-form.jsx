@@ -1,8 +1,7 @@
 import React,{Component} from "react";
-import { Form, Input,  Select} from "antd";
+import { Form, Input} from "antd";
 import PropTypes from 'prop-types'
 const Item = Form.Item;
-const Option = Select.Option;
 
 @Form.create()
 class AddRoleForm extends Component{
