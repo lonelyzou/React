@@ -25,4 +25,15 @@ export const reqCategory = (parentId) => ajax(prefix+'/manage/category/list',{pa
 export const reqAddCategory = (parentId,categoryName) => ajax(prefix+'/manage/category/add',{parentId,categoryName},'POST')
 //更新品类名称
 export const reqUpdateCategory = (categoryId,categoryName) => ajax(prefix+'/manage/category/update',{categoryId,categoryName},'POST')
-
+//根据分类ID获取分类
+export const reqProductsList = (categoryId) => ajax(prefix+'/manage/category/info',{categoryId});
+//获取用户列表
+export const reqUserList = () => ajax(prefix+'/manage/user/list');
+//新增用户
+export const reqAddUser = (username,password ,phone ,email ,role_id ) => ajax(prefix+'/manage/user/add',{username,password ,phone ,email ,role_id },'POST')
+//获取角色列表
+export const reqRoleList = () => ajax(prefix+'/manage/role/list');
+//新增角色
+export const reqAddRole = (name)=>ajax(prefix+'/manage/role/add',{name},"POST")
+//请求分页商品列表数据的函数
+export const reqProductList = (pageNum, pageSize)=>ajax(prefix+'/manage/product/list',({pageNum, pageSize})
