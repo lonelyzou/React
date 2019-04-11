@@ -70,7 +70,7 @@ const Item = Form.Item;
                             getFieldDecorator('username',{
                                 rules: [
                                     {required: true, whiteSpace: true, message: '必须输入用户名'},
-                                    {min: 4,message: '用户名必须大于4位'},
+                                    {min: 2,message: '用户名必须大于2位'},
                                     {max: 12, message: '用户名必须小于12位'},
                                     {patten: /^[a-zA-Z0-9_]+$/, message:'用户名必须是英文、数组或下划线组成'}
                                 ]

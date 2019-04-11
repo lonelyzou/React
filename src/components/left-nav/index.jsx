@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom'
 import menuList from '../../config/menuConfig';
 import logo from "../../assets/images/logo.png";
+import memory from '../../utils/memory-utils'
 import './index.less'
 const SubMenu = Menu.SubMenu;
 const Item = Menu.Item;
@@ -17,14 +18,18 @@ const Item = Menu.Item;
     }
     constructor(props) {
         super(props);
+        //创建菜单
         const openKeys =[];
-        this.menu = this.createMenu(menuList,openKeys);
+        const menus = this.getMenu(menuList);
+        console.log(memory.user)
+        this.menus = this.createMenu(menuList,openKeys);
+        // 初始化状态
         this.state = {
             openKeys
         }
     }
 
-    createItem (item) {
+    createItem(item) {
         return (
             <Item key={item.key}>
                 <Link to={item.key}>
@@ -34,16 +39,20 @@ const Item = Menu.Item;
             </Item>
         )
     }
+
     createMenu(menuList,openKeys){
+        // 获取当前的路径
         const { pathname } = this.props.location;
+        // 判断是一级菜单、二级菜单
         return menuList.map((menu)=>{
             const children = menu.children;
             if(children){
+                // 二级菜单
                 return (
                     <SubMenu key={menu.key} title={<span><Icon type={menu.icon} /><span>{menu.title}</span></span>}>
                         {
                            children.map((item)=>{
-                               if(item.key === pathname){
+                               if(pathname.startsWith(item.key) || item.key.startsWith(pathname) ){
                                    openKeys.push(menu.key);
                                }
                                 return this.createItem(item)
@@ -52,22 +61,86 @@ const Item = Menu.Item;
                     </SubMenu>
                 )
             } else {
+                // 一级菜单
                return this.createItem(menu)
             }
         })
     }
+    getMenu(menuList) {
+            //获取当前用户权限数组
+        const { menus } = memory.user.role;
+        //生成权限数组对应的菜单项
+         return menuList.reduce((prev,curr)=>{
+            if(menus.find((item)=> item === curr.key)){
+                // 说明当前遍历的curr在权限数组中
+                const children = curr.children;
+                if(children){
+                    //如果有children，还要判断里面的children是否在权限数组中
+                    curr.children = children.filter((item)=> menus.find((menu)=> menu === item.key));
+                }
+                return [...prev,curr];
+            } else {
+                // 不在
+                return prev;
+            }
+        },[])
+    }
+    // createMenu(menuList,openKeys) {
+    //     // 获取当前用户权限数组
+    //     const { menus } = memory.user.role;
+    //     const { pathname } = this.props.location;
+    //     // 生成权限数组对应的菜单项
+    //     return menuList.reduce((prev, curr) => {
+    //         if (menus.find((menu) => menu === curr.key)) {
+    //             // 说明当前遍历的curr在权限数组中
+    //             let children = curr.children;
+    //             if (children) {
+    //                 // 如果有children，还要判断里面的children是否在权限数组中
+    //                 return [...prev, <SubMenu
+    //                     key={curr.key}
+    //                     title={<span><Icon type={curr.icon} /><span>{curr.title}</span></span>}
+    //                 >
+    //                     {
+    //                         children.reduce((previous, current) => {
+    //                             if (menus.find((menu) => menu === current.key)) {
+    //                                 // 是否展开菜单项
+    //                                 if (pathname.startsWith(current.key) || current.key.startsWith(pathname)) {
+    //                                     openKeys.push(curr.key);
+    //                                 }
+    //                                 return [...previous, this.createItem(current)];
+    //                             } else {
+    //                                 return previous;
+    //                             }
+    //                         }, [])
+    //                     }
+    //                 </SubMenu>]
+    //             } else {
+    //                 return [...prev, this.createItem(curr)];
+    //             }
+    //         } else {
+    //             // 不在
+    //             return prev;
+    //         }
+    //
+    //     }, []);
+    //
+    // }
     openChange = (openKeys)=>{
         this.setState({
             openKeys
         })
     }
     handleClick = ()=>{
+        // 收起所有的二级菜单
         this.setState({
             openKeys: []
         })
     }
     render() {
-        const { pathname } = this.props.location;
+        let { pathname } = this.props.location;
+        if(pathname.startsWith('/product')){
+            pathname = '/product';
+        }
         const {opacity} = this.props;
         return (
             <Fragment>
@@ -77,7 +150,7 @@ const Item = Menu.Item;
                 </Link>
                 <Menu theme="dark" selectedKeys={[pathname]} mode="inline" openKeys={this.state.openKeys} onOpenChange={this.openChange}>
                     {
-                        this.menu
+                        this.menus
                     }
                 </Menu>
             </Fragment>

@@ -50,19 +50,24 @@ class AddUserForm extends Component{
                     )}
                 </Item>
                 <Item label="密码" labelCol={{span: 6}}  wrapperCol={{span: 15}}>
-                    {getFieldDecorator
-                         ('password',{rules:[{validator: this.passwordValidator}]})
-                         (<Input placeholder="请输入密码"  type='password'/>)}
+                    { getFieldDecorator('password', {
+                        rules:[{validator: this.passwordValidator}],
+                    })(
+                        <Input placeholder="请输入密码"  type='password'/>
+                        )}
                 </Item>
                 <Item label="手机号" labelCol={{span: 6}}  wrapperCol={{span: 15}}>
-                    {getFieldDecorator('phone')( <Input placeholder="请输入手机号" />)}
+                    { getFieldDecorator('phone')(
+                        <Input placeholder="请输入手机号" />
+                      )}
                 </Item>
                 <Item label="邮箱" labelCol={{span: 6}}  wrapperCol={{span: 15}}>
-                    {getFieldDecorator('email')(  <Input placeholder="请输入邮箱" type='email' />)}
+                    {getFieldDecorator('email')(
+                        <Input placeholder="请输入邮箱" type='email' />
+                      )}
                 </Item>
                 <Item label="角色" labelCol={{span: 6}}  wrapperCol={{span: 15}}>
-                    {  getFieldDecorator('role_id')
-                      (
+                    {  getFieldDecorator('role_id')(
                         <Select placeholder='请选择分类'>
                             {
                                 roles.map( (item)=>{

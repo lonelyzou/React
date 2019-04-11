@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom'
 import MyBtn from '../myButton/';
 import memory from '../../utils/memory-utils'
 import dayjs from 'dayjs';
-import {reqWeather } from '../../api';
+import {reqWeather } from '../../api/index';
 import menuList from '../../config/menuConfig';
 
 import './index.less';
@@ -43,7 +43,7 @@ class HeaderMain extends Component{
             if(children){
               for(let j=0,length = children.length;j<length;j++){
                   let item = children[j];
-                  if(pathname === item.key){
+                  if(pathname.startsWith(item.key)){
                       return item.title;
                   }
               }

@@ -11,12 +11,11 @@ import LeftNav from '../../components/left-nav';
 import Home from '../home';
 import HeaderMain from '../../components/header/index'
 import Category from '../category';
-import Product from '../product/products';
+import Product from '../product';
 import Role from '../role/index';
-import Bar from '../charts/bar';
+import Charts from '../charts/index';
 import User from '../user/index';
-import Line from '../charts/line';
-import Pie from '../charts/pie';
+
 
 const {Header, Content, Footer, Sider } = Layout;
 
@@ -68,9 +67,7 @@ export default class Admin extends Component {
                                 <Route path="/product" component={Product}/>
                                 <Route path='/user' component={User}/>
                                 <Route path='/role' component={Role}/>
-                                <Route path='/charts/bar' component={Bar}/>
-                                <Route path='/charts/line' component={Line}/>
-                                <Route path='/charts/pie' component={Pie}/>
+                                <Route path='/charts' component={Charts}/>
                                 <Redirect to="/home"/>
                             </Switch>
                         </div>

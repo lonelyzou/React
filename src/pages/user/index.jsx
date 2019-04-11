@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import MyBtn from '../../components/myButton/index'
 import {Button, Card, Table,message, Modal} from "antd";
 import dayjs from "dayjs";
-import { reqUserList, reqAddUser } from '../../api/index'
+import { reqUserList, reqAddUser ,reqDeleteUser,reqUpdateUser} from '../../api/index'
 import AddUserForm from "./Add-user-form";
-
+import UpdateUserForm from './update-user'
 class User extends Component {
     constructor(props) {
         super(props);
@@ -13,8 +13,11 @@ class User extends Component {
             users: [], //用户数组
             roles: [], //所属角色数组
             isShowAddUserModal: false, //是否展示创建用户的标识
+            isShowUpdateUserModal: false, //是否展示创建用户的标识
+            user:{}  //保存当前选中单个分类数据,要操作分类数据
         };
         this.AddUserForm = React.createRef();
+        this.updateUserForm = React.createRef();
     }
     //定义列
     columns = [
@@ -45,12 +48,14 @@ class User extends Component {
         },
         {
             title: '操作',
-            render: () => <span><MyBtn>修改</MyBtn><MyBtn style={{marginLeft:"15px"}}>删除</MyBtn></span>,
+            key:'operator',
+            render: user =>{
+               return <span><MyBtn onClick={this.showUpdateUserForm(user)}>修改</MyBtn>&nbsp;&nbsp;&nbsp;<MyBtn onClick={this.deleteUser(user)}>删除</MyBtn></span>
+            }
         }];
     //获取用户列表
     getUserList = async ()=>{
         const result = await reqUserList();
-        console.log(result);
         if(result.status === 0){
             message.success('获取用户列表成功')
             this.setState({
@@ -66,18 +71,19 @@ class User extends Component {
         this.getUserList();
     }
     //新增用户
-    addUser = async ()=>{
-        const { validateFields } = this.AddUserForm.current.props.form;
+    addUser = ()=>{
+        const { validateFields ,resetFields} = this.AddUserForm.current.props.form;
         validateFields(async (errors,values)=>{
             if(!errors){
                 const result =await reqAddUser(values.username,values.password ,values.phone ,values.email ,values.role_id);
                 if( result.status === 0 ){
                    message.success('添加成功') ;
-                   console.log(result)
                    this.setState({
-                       users:[...this.state.users,result.data],
+                       users:[...this.state.users,result.user],
                        isShowAddUserModal: false, //是否展示创建用户的标识
                    })
+                    //重置表单项
+                    resetFields();
                 } else {
                     message.error('添加失败')
                 }
@@ -86,9 +92,64 @@ class User extends Component {
             }
         })
     }
-    render() {
-        const {users,roles,isShowAddUserModal} = this.state;
+    //修改用户
+    updateUser = ()=>{
+        const {validateFields,resetFields} = this.updateUserForm.current.props.form;
+        validateFields(async (errors,values)=>{
+            if(!errors){
+                const {username,password,phone,email} = values;
+                const {_id} = this.state.user;
+                const result = await reqUpdateUser(username,password,phone,email,_id)
+                if( result.status === 0 ){
+                    console.log(result);
+                    message.success('修改成功') ;
+                    const {username,password,phone,email,role_id} =result.data;
+                    this.setState({
+                        isShowUpdateUserModal: false,
+                        users: this.state.users.map((item)=>{
+                            if(item._id === _id){
+                                return { ...item , username,password,phone,email,role_id }
+                            }
+                            return item
+                        })
+                    })
+                    //重置表单项
+                    resetFields();
+                } else {
+                    message.error('添加失败')
+                }
+            }
+        })
+    }
+    //删除用户
+    deleteUser = (user)=>{
+        return async ()=>{
+            const userId = user._id
+            const result = await reqDeleteUser(userId);
+            if(result.status === 0) {
+                message.success('删除成功')
+                this.setState({
+                    users:this.state.users.filter((item)=>{
+                        if(userId !== item._id) return item
+                    })
+                })
+            } else {
+                message.error(result.msg);
+            }
+        }
+    }
+    //显示修改用户表单
+    showUpdateUserForm=(user)=>{
+        return()=>{
+            this.setState({
+                isShowUpdateUserModal: true, //是否展示创建用户的标识
+                user
+            })
+        }
 
+    }
+    render() {
+        const {users,roles,isShowAddUserModal,user,isShowUpdateUserModal} = this.state;
             return (
                 <Card
                     title={<Button type="primary" onClick={() => this.setState({isShowAddUserModal:true})}>创建用户</Button> }
@@ -114,6 +175,17 @@ class User extends Component {
                         cancelText="取消"
                     >
                         <AddUserForm roles={roles} users={users}  wrappedComponentRef={this.AddUserForm}/>
+                    </Modal>
+
+                    <Modal
+                        title="修改用户"
+                        visible={isShowUpdateUserModal}
+                        onOk={this.updateUser}
+                        onCancel={() => this.setState({isShowUpdateUserModal:false})}
+                        okText="确认"
+                        cancelText="取消"
+                    >
+                        <UpdateUserForm  user={user} roles={roles} wrappedComponentRef={this.updateUserForm}/>
                     </Modal>
                 </Card>
             )

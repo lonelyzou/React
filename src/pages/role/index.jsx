@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {Card,Button,Table,Radio,Modal, message} from 'antd';
 import dayjs from "dayjs";
-import { reqRoleList ,reqAddRole} from '../../api/index'
+import { reqRoleList ,reqAddRole,reqUpdateRole} from '../../api/index'
 import AddRoleForm from "./Add-Role-form";
 import UpdateRoleForm from "./Update-Role-form";
+import memory from '../../utils/memory-utils';
 const RadioGroup = Radio.Group;
 export default class Role extends Component {
     constructor(props) {
@@ -48,7 +49,6 @@ export default class Role extends Component {
             dataIndex: 'auth_name',
         }];
 }
-
   //radio状态改变时触发的函数
     onRadioChange = (e)=>{
         const role = this.state.roles.find(item => item._id ===e.target.value)
@@ -68,6 +68,7 @@ export default class Role extends Component {
             this.setState({
                 roles:result.data
             })
+
         }else {
             message.success("获取角色列表失败")
         }
@@ -78,7 +79,7 @@ export default class Role extends Component {
     }
     //创建角色函数
     AddRole = ()=>{
-        const {validateFields} = this.AddRoleForm.current.props.form;
+        const {validateFields,resetFields} = this.AddRoleForm.current.props.form;
         validateFields (async (errors,values)=>{
           if(!errors){
               const result =await reqAddRole(values.name)
@@ -88,6 +89,8 @@ export default class Role extends Component {
                       roles:[...this.state.roles,result.data],
                       isShowAddRoleModal:false
                   })
+                  //重置表单项
+                 resetFields();
               }else{
                   message.error("角色添加失败")
               }
@@ -95,8 +98,32 @@ export default class Role extends Component {
         } )
     }
     //设置角色权限
-    UpdateRole =()=>{
-        this.setState({isShowAddRoleModal:false})
+    UpdateRole =async ()=>{
+        const { role } = this.state;
+        role.auth_time = Date.now();
+        role.auth_name = memory.user.username;
+        const result = await reqUpdateRole(role);
+        if(result.status === 0 ){
+                message.success("权限修改成功");
+                this.setState({
+                    isShowUpdateRoleModal:false,
+                    roles:this.state.roles.map((item)=>{
+                        if(item._id === role._id){
+                            return role;
+                        }
+                        return item;
+                    })
+                })
+        }else{
+            message.error("权限修改失败")
+        }
+    }
+
+    //改变role数据
+    ChangeRole = (menus)=>{
+        return this.setState({
+            role:{...this.state.role,menus}
+        })
     }
     render() {
         const {roles,isDisabled,value,isShowAddRoleModal,isShowUpdateRoleModal,role} = this.state;
@@ -138,7 +165,7 @@ export default class Role extends Component {
                     okText="确认"
                     cancelText="取消"
                 >
-                    <UpdateRoleForm name={role.name}/>
+                    <UpdateRoleForm role={role} ChangeRole={this.ChangeRole}/>
                 </Modal>
             </Card>
         )
